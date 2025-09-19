@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Elementor Webhook</title>
+</head>
+<body>
+    <h1>Webhook Ativo</h1>
+    <div id="status"></div>
+
+    <script>
+    // Função para processar dados do formulário
+    function processFormData(data) {
+        const sheetData = {
+            horario: new Date().toLocaleString('pt-BR', { 
+                timeZone: 'America/Sao_Paulo',
+                day: '2-digit',
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
+            form_name: data.form_name || 'Get a Quote',
+            name: data.Name || '',
+            email: data.Email || '',
+            phone: data.Phone || '',
+            company: data.Company || '',
+            business_type: data['Business type'] || '',
+            how_did_you_hear: data['How Did You Hear About Us'] || '',
+            website: data.Website || '',
+            country: data.Country || '',
+            average_order: data['Average Order Size'] || '',
+            gross_sales: data['Gross Sales Per Year'] || '',
+            message: data.Message || '',
+            form_id: data.form_id || ''
+        };
+
+        console.log('Enviando para Google Sheets:', sheetData);
+
+        // Enviar direto para Google Apps Script
+        fetch('https://script.google.com/macros/s/AKfycbw5NCdwxiArp17i0wUpJWHsXvf5cDQz2PQpkL9Oke6V77CGRAjqwyFBCLqyvZdNllbQBg/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sheetData)
+        });
+
+        document.getElementById('status').innerHTML = 'Dados enviados: ' + JSON.stringify(sheetData);
+    }
+
+    // Verificar se há dados na URL (método GET)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.toString()) {
+        const data = {};
+        for (const [key, value] of urlParams) {
+            data[key] = decodeURIComponent(value);
+        }
+        console.log('Dados recebidos via GET:', data);
+        processFormData(data);
+    }
+    </script>
+</body>
+</html>
